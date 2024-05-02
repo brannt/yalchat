@@ -1,0 +1,39 @@
+import ChatInterface from "./components/ChatInterface";
+function App() {
+  return (
+    <div className="App container is-flex is-flex-direction-column">
+      <section className="hero is-small is-info">
+        <div className="hero-body">
+          <div className="container">
+            <h1 className="title">Yet Another LLM Chat App</h1>
+            <h2 className="subtitle">A humble chatbot</h2>
+          </div>
+        </div>
+      </section>
+      <section className="section container is-flex is-flex-direction-column">
+        <div className="container is-max-desktop is-flex is-flex-direction-column">
+          <ChatInterface />
+        </div>
+      </section>
+      <footer className="footer py-6">
+        <a target="_blank" href="https://icons8.com/icon/n2XDIOJc6t91/chat">
+          Chat
+        </a>{" "}
+        icon by{" "}
+        <a target="_blank" href="https://icons8.com">
+          Icons8
+        </a>
+        <br />
+        <a target="_blank" href="https://icons8.com/icon/60700/sent">
+          Send
+        </a>{" "}
+        icon by{" "}
+        <a target="_blank" href="https://icons8.com">
+          Icons8
+        </a>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
