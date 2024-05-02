@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "yalchat"
+version = "0.1.0"
+description = "Yet Another LLM Chat App"
+authors = ["Artem Gorokhov <branntart@gmail.com>"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.3"
+litellm = "^1.35.33"
+pydantic-settings = "^2.2.1"
+uvicorn = "^0.29.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.2"
+mypy = "^1.10.0"
+pytest = "^8.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
