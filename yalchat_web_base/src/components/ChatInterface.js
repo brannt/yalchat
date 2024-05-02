@@ -2,11 +2,49 @@ import React, { useState, useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
 import { ROLE } from "../constants";
 import "./ChatInterface.css";
-import PaperPlane from "./icons8-send-30.png";
+import SendIcon from "./icons8-send-30.png";
+import StopIcon from "./icons8-stop-30.png";
+
+function fetchChatbotReader(body) {
+  const response = fetch("http://localhost:5005/webhooks/rest/webhook", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.body) {
+    return;
+  }
+  let decoder = new TextDecoderStream();
+  const reader = response.body.pipeThrough(decoder).getReader();
+  return reader;
+}
+
+async function readChatbotResponse(reader, setMessagesCallback) {
+  let accumulatedAnswer = "";
+
+  while (true) {
+    let { value, done } = await reader.read();
+    if (done) {
+      break;
+    }
+    accumulatedAnswer += value;
+    setMessagesCallback((currentMessages) => {
+      const newMessages = [...currentMessages];
+      newMessages[newMessages.length - 1].content = accumulatedAnswer;
+      return newMessages;
+    });
+  }
+}
 
 function ChatInterface() {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
+  const [isResponseInProgress, setIsResponseInProgress] = useState(false);
+  const [reader, setReader] = useState(null);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -15,9 +53,7 @@ function ChatInterface() {
 
   useEffect(scrollToBottom, [messages]);
 
-  const handleSendMessage = async (event) => {
-    event.preventDefault();
-
+  const handleSendMessage = async () => {
     if (!inputText.trim()) {
       return;
     }
@@ -30,40 +66,45 @@ function ChatInterface() {
     const botMessage = { content: "", role: ROLE.ASSISTANT };
     setMessages([...body.history, botMessage]);
     setInputText("");
+    setIsResponseInProgress(true);
 
-    const response = await fetch("http://localhost:8000/api/stream_chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    if (!response.body) {
-      return;
-    }
-
-    let decoder = new TextDecoderStream();
-    const reader = response.body.pipeThrough(decoder).getReader();
-    let accumulatedAnswer = "";
-
-    while (true) {
-      let { value, done } = await reader.read();
-      if (done) {
-        break;
+    try {
+      const reader = await fetchChatbotReader(body);
+      if (!reader) {
+        return;
       }
-      accumulatedAnswer += value;
-      setMessages((currentMessages) => {
-        const newMessages = [...currentMessages];
-        newMessages[newMessages.length - 1].content = accumulatedAnswer;
-        return newMessages;
-      });
+
+      setReader(reader);
+      await readChatbotResponse(reader, setMessages);
+    } catch (error) {
+      console.error(error);
+      setError({ message: error, level: "is-danger" });
+    } finally {
+      setIsResponseInProgress(false);
+      setReader(null);
+    }
+  };
+
+  const handleStop = () => {
+    if (reader) {
+      reader.cancel();
+    }
+    setIsResponseInProgress(false);
+    setError({ message: "The request was cancelled", level: "is-warning" });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isResponseInProgress) {
+      handleSendMessage();
+    } else {
+      handleStop();
     }
   };
 
   const enterSumbit = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey && !isResponseInProgress) {
       e.preventDefault();
-      console.log("Enter key pressed");
       e.target.form.requestSubmit();
     }
   };
@@ -73,13 +114,9 @@ function ChatInterface() {
       <header className="message-header">Chat</header>
       <div className="message-body container is-flex is-flex-direction-column">
         {messages && messages.length === 0 ? (
-          <nav className="level is-flex-grow-1">
-            <div className="level-item has-text-centered is-align-content-center title">
-              <p className="initial-message">
-                Hello! How can I help you today?
-              </p>
-            </div>
-          </nav>
+          <div className="has-text-centered title mt-5">
+            <p className="initial-message">Hello! How can I help you today?</p>
+          </div>
         ) : null}
         <div className="content is-flex-grow-1 is-flex is-flex-direction-column">
           {messages &&
@@ -90,11 +127,11 @@ function ChatInterface() {
         </div>
 
         <div>
-          <form onSubmit={handleSendMessage}>
-            <div className="field">
-              <div className="control">
+          <form onSubmit={handleSubmit}>
+            <div className="field is-grouped">
+              <div className="control is-expanded">
                 <textarea
-                  className="textarea"
+                  className="textarea pr-6"
                   placeholder="Type a message..."
                   rows="2"
                   value={inputText}
@@ -102,17 +139,25 @@ function ChatInterface() {
                   onKeyDown={enterSumbit}
                 />
               </div>
-            </div>
-            <div className="field">
-              <div className="control">
-                <button type="submit" className="button">
+
+              <div className="control is-relative">
+                <button type="submit" className="button send-button">
                   <span class="icon">
-                    <img
-                      src={PaperPlane}
-                      alt="Send"
-                      height="30px"
-                      width="30px"
-                    />
+                    {isResponseInProgress ? (
+                      <img
+                        src={StopIcon}
+                        alt="Stop"
+                        height="30px"
+                        width="30px"
+                      />
+                    ) : (
+                      <img
+                        src={SendIcon}
+                        alt="Send"
+                        height="30px"
+                        width="30px"
+                      />
+                    )}
                   </span>
                 </button>
               </div>
@@ -120,6 +165,12 @@ function ChatInterface() {
           </form>
         </div>
       </div>
+      {error && (
+        <div className={`notification ${error.level}`}>
+          <button className="delete" onClick={() => setError(null)}></button>
+          {error.message}
+        </div>
+      )}
     </article>
   );
 }

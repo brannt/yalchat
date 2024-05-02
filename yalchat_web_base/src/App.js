@@ -18,16 +18,16 @@ function App() {
       <footer className="footer py-6">
         <a target="_blank" href="https://icons8.com/icon/n2XDIOJc6t91/chat">
           Chat
-        </a>{" "}
-        icon by{" "}
-        <a target="_blank" href="https://icons8.com">
-          Icons8
         </a>
-        <br />
+        ,{" "}
         <a target="_blank" href="https://icons8.com/icon/60700/sent">
           Send
+        </a>
+        ,{" "}
+        <a target="_blank" href="https://icons8.com/icon/91467/stop-circled">
+          Stop
         </a>{" "}
-        icon by{" "}
+        icons by{" "}
         <a target="_blank" href="https://icons8.com">
           Icons8
         </a>
