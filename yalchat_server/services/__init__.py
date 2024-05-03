@@ -1,3 +1,3 @@
-from . import chat
+from . import llm
 
-__all__ = ["chat"]
+__all__ = ["llm"]

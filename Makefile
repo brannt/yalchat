@@ -10,4 +10,4 @@ lint:
 
 
 run:
-	poetry run uvicorn yalchat_server.__main__:app --reload
+	poetry run uvicorn yalchat_server.app:app --reload

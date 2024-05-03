@@ -18,15 +18,21 @@ class ChatResponse(BaseModel):
     message: str
 
 
-@router.post("/chat")
+@router.post("/")
 async def chat(ch: ChatRequest) -> ChatResponse:
-    response = await services.chat.get_chat_answer(ch.model, ch.query, ch.history)
+    """
+    Get a simple chat response without storing the history.
+    """
+    response = await services.llm.get_chat_answer(ch.model, ch.query, ch.history)
     return ChatResponse(message=response)
 
 
-@router.post("/stream_chat")
-async def stream_chat(ch: ChatRequest):
+@router.post("/stream")
+async def simple_stream_chat(ch: ChatRequest):
+    """
+    Stream a chat response without storing the history.
+    """
     return StreamingResponse(
-        services.chat.stream_chat_answer(ch.model, ch.query, ch.history),
+        services.llm.stream_chat_answer(ch.model, ch.query, ch.history),
         media_type="text/plain",
     )
