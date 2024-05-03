@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 class ChatRequest(BaseModel):
-    query: str
+    message: str
     model: str = config.MODEL
     history: list[ChatMessage] | None = None
 
@@ -23,7 +23,7 @@ async def chat(ch: ChatRequest) -> ChatResponse:
     """
     Get a simple chat response without storing the history.
     """
-    response = await services.llm.get_chat_answer(ch.model, ch.query, ch.history)
+    response = await services.llm.get_chat_answer(ch.model, ch.message, ch.history)
     return ChatResponse(message=response)
 
 
@@ -33,6 +33,6 @@ async def simple_stream_chat(ch: ChatRequest):
     Stream a chat response without storing the history.
     """
     return StreamingResponse(
-        services.llm.stream_chat_answer(ch.model, ch.query, ch.history),
+        services.llm.stream_chat_answer(ch.model, ch.message, ch.history),
         media_type="text/plain",
     )
