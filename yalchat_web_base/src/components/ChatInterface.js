@@ -5,8 +5,8 @@ import "./ChatInterface.css";
 import SendIcon from "./icons8-send-30.png";
 import StopIcon from "./icons8-stop-30.png";
 
-function fetchChatbotReader(body) {
-  const response = fetch("http://localhost:5005/webhooks/rest/webhook", {
+async function fetchChatbotReader(body) {
+  const response = await fetch("http://localhost:8000/api/simple_chat/stream", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
