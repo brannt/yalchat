@@ -38,10 +38,10 @@ async def get_chats(
     return result
 
 
-@router.post("/", response_model=CreateChatResponse)
+@router.post("/")
 async def create_chat(
     chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)], chat: CreateChatRequest
-):
+) -> types.Chat:
     """
     Start a new chat session.
     """
@@ -57,7 +57,9 @@ async def create_chat(
         title=title,
         tags=tags,
     )
-    return {"chat_id": result}
+    return types.Chat(
+        id=result, model=chat.model, title=title, tags=tags, created_at=now
+    )
 
 
 @router.get("/{chat_id}")
