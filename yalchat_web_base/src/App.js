@@ -10,11 +10,7 @@ function App() {
           </div>
         </div>
       </section>
-      <section className="section container is-flex is-flex-direction-column">
-        <div className="container is-max-desktop is-flex is-flex-direction-column">
-          <ChatInterface />
-        </div>
-      </section>
+      <ChatInterface />
       <footer className="footer py-6">
         <a target="_blank" href="https://icons8.com/icon/n2XDIOJc6t91/chat">
           Chat

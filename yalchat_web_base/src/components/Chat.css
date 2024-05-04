@@ -1,0 +1,21 @@
+.send-button {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+.is-writing .chat-message:last-child::after {
+  content: "\00a0";
+  width: 5px;
+  height: 20px;
+  background: #000000;
+  display: inline-block;
+
+  animation: cursor-blink 1.5s steps(2) infinite;
+}
+
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
+}
