@@ -1,3 +1,4 @@
+PORT ?= 8000
 install-pro:
 	poetry install --without dev --with deploy
 
@@ -10,7 +11,7 @@ lint:
 
 
 run-dev:
-	poetry run uvicorn yalchat_server.app:app --reload
+	poetry run uvicorn yalchat_server.app:app --reload --port $(PORT)
 
 run-pro:
-	poetry run gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:80 yalchat_server.app:app
+	poetry run gunicorn -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT) yalchat_server.app:app
