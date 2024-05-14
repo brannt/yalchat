@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "yalchat"
+name = "yalchat_server"
 version = "0.1.0"
 description = "Yet Another LLM Chat App"
 authors = ["Artem Gorokhov <branntart@gmail.com>"]
@@ -18,7 +18,7 @@ fastapi = "^0.110.3"
 litellm = "^1.35.33"
 pydantic-settings = "^2.2.1"
 uvicorn = "^0.29.0"
-databases = {extras = ["aiosqlite"], version = "^0.9.0"}
+databases = { extras = ["aiosqlite"], version = "^0.9.0" }
 
 
 [tool.poetry.group.dev.dependencies]
