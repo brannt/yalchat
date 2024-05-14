@@ -11,6 +11,7 @@ import { createChat, getChat } from "../api/chats";
 import "./Chat.css";
 import SendIcon from "./icons8-send-30.png";
 import StopIcon from "./icons8-stop-30.png";
+import config from "../config";
 
 function Chat({ chatId, onNewChat }) {
   const [messages, setMessages] = useState([]);
@@ -39,7 +40,7 @@ function Chat({ chatId, onNewChat }) {
       setMessages([]);
       setChatMetadata({
         title: "New Chat",
-        model: "ollama_chat/phi3",
+        model: config.DEFAULT_MODEL,
         tags: chatId === "private" ? ["private"] : [],
       });
     }
@@ -66,7 +67,7 @@ function Chat({ chatId, onNewChat }) {
 
     try {
       if (chatId === "new") {
-        const newChat = await createChat("ollama_chat/phi3", inputText);
+        const newChat = await createChat(config.DEFAULT_MODEL, inputText);
         setChatMetadata({
           title: newChat.title,
           model: newChat.model,
