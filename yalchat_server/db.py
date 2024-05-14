@@ -34,5 +34,4 @@ async def close_db_connection():
 async def create_table(table: sa.Table):
     schema = sa.schema.CreateTable(table, if_not_exists=True)
     query = str(schema.compile(dialect=dialect))
-    print(query)
     await database.execute(query=query)

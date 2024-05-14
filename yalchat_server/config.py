@@ -15,4 +15,3 @@ class Settings(BaseSettings):
 
 
 config = Settings()
-print(config)
