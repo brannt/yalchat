@@ -19,16 +19,9 @@ app.include_router(api.router, prefix="/api")
 app.add_event_handler("startup", db.connect_to_db)
 app.add_event_handler("shutdown", db.close_db_connection)
 
-origins = [
-    "http://localhost:3000",
-    "http://0.0.0.0:3000",
-    "http://127.0.0.1:3000",
-    "https://yalchat.onrender.com",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=config.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
