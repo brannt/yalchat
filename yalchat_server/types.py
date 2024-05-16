@@ -1,6 +1,8 @@
 import datetime
+import json
+from typing import Any
 import uuid
-from pydantic import BaseModel, TypeAdapter
+from pydantic import BaseModel, TypeAdapter, field_validator
 
 
 class ChatMessage(BaseModel):
@@ -25,6 +27,10 @@ ChatMessageList = TypeAdapter(list[ChatMessage])
 ChatID = uuid.UUID
 
 
+def parse_to_json(value: str | Any) -> Any:
+    return json.loads(value) if isinstance(value, str) else value
+
+
 class Chat(BaseModel):
     id: ChatID
     title: str
@@ -32,6 +38,10 @@ class Chat(BaseModel):
     model: str
     created_at: datetime.datetime
 
+    _parse_tags = field_validator("tags", mode="before")(parse_to_json)
+
 
 class ChatWithHistory(Chat):
     history: list[ChatMessage] = []
+
+    _parse_history = field_validator("history", mode="before")(parse_to_json)

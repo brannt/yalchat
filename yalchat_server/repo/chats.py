@@ -8,15 +8,15 @@ chats = sa.Table(
     "chats",
     db.metadata,
     sa.Column(
-        "id", sa.UUID, primary_key=True, server_default=sa.func.uuid(), nullable=False
+        "id", sa.UUID, primary_key=True, server_default=db.func.uuid(), nullable=False
     ),
     sa.Column("title", sa.String),
-    sa.Column(
-        "tags", sa.JSON, server_default=sa.text("[]"), nullable=False, default=[]
+    db.func.json_array_column(
+        "tags",
     ),
     sa.Column("model", sa.String),
-    sa.Column(
-        "history", sa.JSON, server_default=sa.text("[]"), nullable=False, default=[]
+    db.func.json_array_column(
+        "history",
     ),
     sa.Column("created_at", sa.DateTime),
 )
@@ -37,7 +37,7 @@ class ChatRepo:
             .limit(limit)
         )
         result = await self.database.fetch_all(query=query)
-        return [types.Chat(**row._mapping) for row in result]
+        return [types.Chat.model_validate(dict(row._mapping)) for row in result]
 
     async def create_chat(
         self, model: str, title: str = "", tags: list[str] | None = None
@@ -73,10 +73,6 @@ class ChatRepo:
         query = (
             chats.update()
             .where(chats.c.id == chat_id)
-            .values(
-                history=sa.func.json_insert(
-                    chats.c.history, "$[#]", sa.func.json(message.model_dump_json())
-                )
-            )
+            .values(history=db.func.json_append(chats.c.history, message.model_dump()))
         )
         await self.database.execute(query=query)
