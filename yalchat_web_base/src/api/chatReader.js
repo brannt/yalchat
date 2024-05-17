@@ -46,7 +46,6 @@ async function readChatResponse(reader, setMessagesCallback) {
     }
     accumulatedAnswer += value;
     setMessagesCallback((currentMessages) => {
-      console.log(accumulatedAnswer);
       const newMessages = [...currentMessages];
       newMessages[newMessages.length - 1].content = accumulatedAnswer;
       return newMessages;

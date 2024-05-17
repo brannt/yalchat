@@ -17,7 +17,7 @@ function ChatInterface() {
       setChats(chats);
       setReloadChats(false);
     })();
-  }, []);
+  }, [reloadChats]);
   return (
     <section className="section container is-flex">
       <div className="columns container">
