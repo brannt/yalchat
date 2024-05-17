@@ -66,7 +66,7 @@ function Chat({ chatId, onNewChat }) {
     setIsResponseInProgress(true);
 
     try {
-      if (chatId === "new") {
+      if (!chatId || chatId === "new") {
         const newChat = await createChat(config.DEFAULT_MODEL, inputText);
         setChatMetadata({
           title: newChat.title,
