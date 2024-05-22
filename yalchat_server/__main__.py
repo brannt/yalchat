@@ -23,5 +23,13 @@ def init_db():
     asyncio.run(ainit_db())
 
 
+def print_ddl():
+    from yalchat_server import db, repo
+    from atlas_provider_sqlalchemy.ddl import print_ddl
+
+    _ = repo
+    print_ddl(db.dialect_name, list(db.metadata.tables.values()))
+
+
 if __name__ == "__main__":
     fire.Fire()

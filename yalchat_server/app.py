@@ -3,9 +3,8 @@ import logging
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from yalchat_server import api, auth, db
+from yalchat_server import api, auth, auth_views, db
 from yalchat_server.config import config
-from yalchat_server.repo.chats import ChatRepo
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,17 +16,10 @@ logger = logging.getLogger("resol")
 app = FastAPI()
 
 app.include_router(api.router, prefix="/api")
-app.include_router(auth.router, prefix="/auth")
+app.include_router(auth_views.router, prefix="/auth")
 
 app.add_event_handler("startup", db.connect_to_db)
 app.add_event_handler("shutdown", db.close_db_connection)
-
-
-@app.on_event("startup")
-async def setup_db():
-    # For now while we have a transient SQLite database, we can create the table here.
-    chat_repo = ChatRepo(db.database)
-    await chat_repo.setup()
 
 
 app.add_middleware(

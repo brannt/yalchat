@@ -30,6 +30,7 @@ google-auth = "^2.29.0"
 ruff = "^0.4.2"
 mypy = "^1.10.0"
 pytest = "^8.2.0"
+atlas-provider-sqlalchemy = "^0.2.2"
 
 
 [tool.poetry.group.deploy.dependencies]
