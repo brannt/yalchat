@@ -87,8 +87,12 @@ async def login(
             key="access_token",
             value=token,
             httponly=True,
-            samesite="strict",
+            # Use secure cookies in production
             secure=not config.DEBUG,
+            # Use samesite="strict" in development
+            # because the frontend and backend run on different ports
+            # and we cannot use samesite="none" without HTTPS
+            samesite="none" if not config.DEBUG else "strict",
             max_age=60 * 60 * 24,
         )
         return TokenResponse(access_token=token, token_type="bearer")
@@ -104,6 +108,6 @@ async def logout(response: Response, user: Annotated[types.User, get_current_use
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        samesite="strict",
         secure=not config.DEBUG,
+        samesite="none" if not config.DEBUG else "strict",
     )

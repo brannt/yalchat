@@ -12,10 +12,10 @@ USERS = {
 
 
 def get_user(username: str) -> types.User | None:
-    if user := USERS[username]:
+    if user := USERS.get(username):
         return types.User(**user)
 
 
 def get_password_hash(username: str) -> str | None:
-    if user := USERS[username]:
+    if user := USERS.get(username):
         return user["password_hash"]
