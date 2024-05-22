@@ -6,6 +6,7 @@ async function privateChatReader(message, history) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ message, history }),
+    credentials: "include",
   });
 
   if (!response.body) {
@@ -25,6 +26,7 @@ async function chatReader(chatId, message) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ message }),
+      credentials: "include",
     }
   );
 
