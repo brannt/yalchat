@@ -4,22 +4,8 @@ import sqlalchemy as sa
 
 from yalchat_server import db, types
 
-chats = sa.Table(
-    "chats",
-    db.metadata,
-    sa.Column(
-        "id", sa.UUID, primary_key=True, server_default=db.func.uuid(), nullable=False
-    ),
-    sa.Column("title", sa.String),
-    db.func.json_array_column(
-        "tags",
-    ),
-    sa.Column("model", sa.String),
-    db.func.json_array_column(
-        "history",
-    ),
-    sa.Column("created_at", sa.DateTime),
-)
+
+chats = db.schema.chats
 
 
 class ChatRepo:

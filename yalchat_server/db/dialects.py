@@ -1,11 +1,9 @@
-from databases import Database
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 from yalchat_server.config import config
 
-database = Database(config.DATABASE_URI)
+
 dialect_name = config.DATABASE_URI.split(":")[0].split("+")[0]
-metadata = sa.MetaData()
 
 
 def get_dialect():
@@ -19,21 +17,6 @@ def get_dialect():
 
 
 dialect = get_dialect()
-
-
-async def connect_to_db() -> Database:
-    await database.connect()
-    return database
-
-
-async def close_db_connection():
-    await database.disconnect()
-
-
-async def create_table(table: sa.Table):
-    schema = sa.schema.CreateTable(table, if_not_exists=True)
-    query = str(schema.compile(dialect=dialect))
-    await database.execute(query=query)
 
 
 class SQLiteFunc:
