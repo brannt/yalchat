@@ -30,7 +30,7 @@ class StatusResponse(BaseModel):
 @router.get("/")
 async def get_chats(
     chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
-    user: Annotated[types.User, Depends(auth.get_current_user)],
+    user: Annotated[types.User, Depends(deps.get_current_user)],
 ) -> list[types.Chat]:
     """
     Get all chat sessions.
@@ -43,7 +43,7 @@ async def get_chats(
 async def create_chat(
     chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
     chat: CreateChatRequest,
-    user: Annotated[types.User, Depends(auth.get_current_user)],
+    user: Annotated[types.User, Depends(deps.get_current_user)],
 ) -> types.Chat:
     """
     Start a new chat session.
@@ -69,7 +69,7 @@ async def create_chat(
 async def get_chat(
     chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
     chat_id: types.ChatID,
-    user: Annotated[types.User, Depends(auth.get_current_user)],
+    user: Annotated[types.User, Depends(deps.get_current_user)],
 ) -> types.ChatWithHistory:
     """
     Get a chat session.
@@ -84,7 +84,7 @@ async def get_chat(
 async def delete_chat(
     chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
     chat_id: types.ChatID,
-    user: Annotated[types.User, Depends(auth.get_current_user)],
+    user: Annotated[types.User, Depends(deps.get_current_user)],
 ):
     """
     Delete a chat session.
@@ -99,7 +99,7 @@ async def stream_chat(
     bg_tasks: BackgroundTasks,
     chat_id: types.ChatID,
     ch: ChatRequest,
-    user: Annotated[types.User, Depends(auth.get_current_user)],
+    user: Annotated[types.User, Depends(deps.get_current_user)],
 ) -> StreamingResponse:
     """
     Stream a chat response with history.
