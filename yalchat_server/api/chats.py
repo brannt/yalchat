@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from openai import BaseModel
-from yalchat_server import deps, services, types
+from yalchat_server import auth, deps, services, types
 from yalchat_server.repo import ChatRepo
 
 router = APIRouter()
@@ -30,6 +30,7 @@ class StatusResponse(BaseModel):
 @router.get("/")
 async def get_chats(
     chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    user: Annotated[types.User, Depends(auth.get_current_user)],
 ) -> list[types.Chat]:
     """
     Get all chat sessions.
@@ -40,7 +41,9 @@ async def get_chats(
 
 @router.post("/")
 async def create_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)], chat: CreateChatRequest
+    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat: CreateChatRequest,
+    user: Annotated[types.User, Depends(auth.get_current_user)],
 ) -> types.Chat:
     """
     Start a new chat session.
@@ -64,7 +67,9 @@ async def create_chat(
 
 @router.get("/{chat_id}")
 async def get_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)], chat_id: types.ChatID
+    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat_id: types.ChatID,
+    user: Annotated[types.User, Depends(auth.get_current_user)],
 ) -> types.ChatWithHistory:
     """
     Get a chat session.
@@ -77,7 +82,9 @@ async def get_chat(
 
 @router.delete("/{chat_id}", response_model=StatusResponse)
 async def delete_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)], chat_id: types.ChatID
+    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat_id: types.ChatID,
+    user: Annotated[types.User, Depends(auth.get_current_user)],
 ):
     """
     Delete a chat session.
@@ -92,6 +99,7 @@ async def stream_chat(
     bg_tasks: BackgroundTasks,
     chat_id: types.ChatID,
     ch: ChatRequest,
+    user: Annotated[types.User, Depends(auth.get_current_user)],
 ) -> StreamingResponse:
     """
     Stream a chat response with history.
