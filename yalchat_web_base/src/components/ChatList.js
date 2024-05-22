@@ -1,9 +1,9 @@
 import React from "react";
+import BeatLoader from "react-spinners/BeatLoader";
 
-function ChatList({ chats, onChatSelect }) {
+function ChatList({ chats, isChatsLoading, onChatSelect }) {
   const handleSelect = (event) => {
     event.preventDefault();
-    console.log(event.target.getAttribute("data-chat-id"));
     onChatSelect(event.target.getAttribute("data-chat-id"));
   };
   return (
@@ -25,15 +25,21 @@ function ChatList({ chats, onChatSelect }) {
       >
         New Private Chat
       </button>
-      <ul className="menu-list">
-        {chats.map((chat) => (
-          <li key={chat.id}>
-            <a href="#" data-chat-id={chat.id} onClick={handleSelect}>
-              {chat.title} <span className="tag">{chat.model}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      {isChatsLoading ? (
+        <div className="container is-flex is-justify-content-center pt-3">
+          <BeatLoader color={"#000000"} loading={true} />
+        </div>
+      ) : (
+        <ul className="menu-list">
+          {chats.map((chat) => (
+            <li key={chat.id}>
+              <a href="#" data-chat-id={chat.id} onClick={handleSelect}>
+                {chat.title} <span className="tag">{chat.model}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </aside>
   );
 }

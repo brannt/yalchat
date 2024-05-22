@@ -3,6 +3,7 @@ import ChatInterface from "./components/ChatInterface";
 import LoginForm from "./components/LoginForm";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
     <div className="App container is-flex is-flex-direction-column">
       <section className="hero is-small is-info">
