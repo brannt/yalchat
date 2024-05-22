@@ -21,6 +21,9 @@ uvicorn = "^0.29.0"
 databases = {extras = ["aiosqlite", "asyncpg"], version = "^0.9.0"}
 python-dotenv = "^1.0.1"
 fire = "^0.6.0"
+python-multipart = "^0.0.9"
+python-jose = "^3.3.0"
+google-auth = "^2.29.0"
 
 
 [tool.poetry.group.dev.dependencies]

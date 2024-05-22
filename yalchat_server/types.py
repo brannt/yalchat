@@ -25,6 +25,7 @@ class SystemMessage(ChatMessage):
 ChatMessageList = TypeAdapter(list[ChatMessage])
 
 ChatID = uuid.UUID
+UserID = int
 
 
 def parse_to_json(value: str | Any) -> Any:
@@ -45,3 +46,9 @@ class ChatWithHistory(Chat):
     history: list[ChatMessage] = []
 
     _parse_history = field_validator("history", mode="before")(parse_to_json)
+
+
+class User(BaseModel):
+    id: UserID
+    username: str
+    email: str

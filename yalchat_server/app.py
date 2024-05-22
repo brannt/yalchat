@@ -1,10 +1,9 @@
 import logging
-from typing import Annotated
 
-from fastapi import Depends, FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from yalchat_server import api, db, deps
+from yalchat_server import api, auth, db
 from yalchat_server.config import config
 from yalchat_server.repo.chats import ChatRepo
 
@@ -18,6 +17,7 @@ logger = logging.getLogger("resol")
 app = FastAPI()
 
 app.include_router(api.router, prefix="/api")
+app.include_router(auth.router, prefix="/auth")
 
 app.add_event_handler("startup", db.connect_to_db)
 app.add_event_handler("shutdown", db.close_db_connection)

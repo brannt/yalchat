@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    SECRET_KEY: str = "mysecretkey"  # Always set in production!
     DEBUG: bool = False
     MODEL: str = "ollama_chat/phi3"
     SUMMARIZE_MODEL: str = "ollama_chat/phi3"
