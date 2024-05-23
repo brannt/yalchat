@@ -35,8 +35,8 @@ def get_token_cookie(request: Request) -> str:
     )
 
 
-def get_authenticated_user_token(user_repo, username: str) -> str | None:
-    if user_repo.get_user(username):
+async def get_authenticated_user_token(user_repo, username: str) -> str | None:
+    if await user_repo.get_user(username):
         return encode_token(username)
     return None
 

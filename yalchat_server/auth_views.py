@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer  # , OAuth2PasswordRequestForm
 from pydantic import BaseModel
@@ -30,15 +30,15 @@ async def login(
     # form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     login_data: PasswordRequest,
     response: Response,
-    user_repo=Depends(deps.user_repo),
+    user_repo: deps.UserRepoDep,
 ) -> TokenResponse:
-    password_hash = user_repo.get_password_hash(login_data.username)
+    password_hash = await user_repo.get_password_hash(login_data.username)
     if not auth.validate_password(password_hash, login_data.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid username or password",
         )
-    if token := auth.get_authenticated_user_token(user_repo, login_data.username):
+    if token := await auth.get_authenticated_user_token(user_repo, login_data.username):
         auth.set_token_cookie(response, token)
         return TokenResponse(access_token=token, token_type="bearer")
 
@@ -61,14 +61,16 @@ async def logout(
 
 
 @router.get("/telegram/callback")
-async def auth_telegram(request: Request, user_repo=Depends(deps.user_repo)):
+async def auth_telegram(
+    request: Request,
+    user_repo: deps.UserRepoDep,
+):
     telegram_data = dict(request.query_params)
     if not auth.validate_telegram(telegram_data):
         raise HTTPException(status_code=403, detail="Invalid hash")
 
-    if token := auth.get_authenticated_user_token(
-        user_repo, request.query_params["username"]
-    ):
+    username = telegram_data["username"] + "@telegram"
+    if token := await auth.get_authenticated_user_token(user_repo, username):
         response = RedirectResponse(url=config.FRONTEND_URL)
         auth.set_token_cookie(response, token)
         return response
