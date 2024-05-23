@@ -18,7 +18,7 @@ fastapi = "^0.110.3"
 litellm = "^1.35.33"
 pydantic-settings = "^2.2.1"
 uvicorn = "^0.29.0"
-databases = {extras = ["aiosqlite", "asyncpg"], version = "^0.9.0"}
+databases = { extras = ["aiosqlite", "asyncpg"], version = "^0.9.0" }
 python-dotenv = "^1.0.1"
 fire = "^0.6.0"
 python-multipart = "^0.0.9"

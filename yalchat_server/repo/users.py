@@ -1,7 +1,7 @@
 from yalchat_server import types
 
 USERS = {
-    "local": {
+    "brannt": {
         "id": 1,
         "username": "localuser",
         "email": "",

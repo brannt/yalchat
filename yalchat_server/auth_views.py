@@ -1,5 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer  # , OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
@@ -31,21 +32,14 @@ async def login(
     response: Response,
     user_repo=Depends(deps.user_repo),
 ) -> TokenResponse:
-    if token := auth.get_authenticated_user_token(
-        user_repo, login_data.username, login_data.password
-    ):
-        response.set_cookie(
-            key="access_token",
-            value=token,
-            httponly=True,
-            # Use secure cookies in production
-            secure=not config.DEBUG,
-            # Use samesite="strict" in development
-            # because the frontend and backend run on different ports
-            # and we cannot use samesite="none" without HTTPS
-            samesite="none" if not config.DEBUG else "strict",
-            max_age=60 * 60 * 24,
+    password_hash = user_repo.get_password_hash(login_data.username)
+    if not auth.validate_password(password_hash, login_data.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid username or password",
         )
+    if token := auth.get_authenticated_user_token(user_repo, login_data.username):
+        auth.set_token_cookie(response, token)
         return TokenResponse(access_token=token, token_type="bearer")
 
     raise HTTPException(
@@ -64,3 +58,19 @@ async def logout(
         secure=not config.DEBUG,
         samesite="none" if not config.DEBUG else "strict",
     )
+
+
+@router.get("/telegram/callback")
+async def auth_telegram(request: Request, user_repo=Depends(deps.user_repo)):
+    telegram_data = dict(request.query_params)
+    if not auth.validate_telegram(telegram_data):
+        raise HTTPException(status_code=403, detail="Invalid hash")
+
+    if token := auth.get_authenticated_user_token(
+        user_repo, request.query_params["username"]
+    ):
+        response = RedirectResponse(url=config.FRONTEND_URL)
+        auth.set_token_cookie(response, token)
+        return response
+
+    raise HTTPException(status_code=403, detail="Invalid username")

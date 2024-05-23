@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from yalchat_server import api, auth, auth_views, db
+from yalchat_server import api, auth_views, db
 from yalchat_server.config import config
 
 logging.basicConfig(
