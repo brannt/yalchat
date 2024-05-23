@@ -1,7 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import config from "../config";
+
 import HashLoader from "react-spinners/HashLoader";
 import { getCurrentUser, loginUser } from "../api/users";
+
+function TelegramLoginButton({ botName, redirectUrl }) {
+  const telegramWrapperRef = useRef(null);
+
+  useEffect(() => {
+    const scriptElement = document.createElement("script");
+    scriptElement.src = "https://telegram.org/js/telegram-widget.js?22";
+    scriptElement.setAttribute("data-telegram-login", botName);
+    scriptElement.setAttribute("data-size", "large");
+    scriptElement.setAttribute("data-auth-url", redirectUrl);
+    scriptElement.async = true;
+
+    telegramWrapperRef.current.appendChild(scriptElement);
+  }, []);
+
+  return (
+    <>
+      <div ref={telegramWrapperRef}></div>
+    </>
+  );
+}
 function LoginForm({ onLoginSuccess }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +34,7 @@ function LoginForm({ onLoginSuccess }) {
       const user = await getCurrentUser();
       user ? onLoginSuccess() : setIsLoading(false);
     })();
-  }, []);
+  });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,6 +49,14 @@ function LoginForm({ onLoginSuccess }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAuthLogin = async (provider) => {
+    const response = await fetch(
+      `${config.BACKEND_URL}/auth/${provider}/login`
+    );
+    const data = await response.json();
+    window.location.href = data.oauth.url;
   };
 
   return (
@@ -75,6 +105,17 @@ function LoginForm({ onLoginSuccess }) {
                 </div>
               </div>
             </form>
+
+            <button
+              className="button is-info"
+              onClick={() => handleAuthLogin("github")}
+            >
+              Login with GitHub
+            </button>
+            <TelegramLoginButton
+              botName={config.TELEGRAM_BOT_NAME}
+              redirectUrl={config.TELEGRAM_REDIRECT_URL}
+            />
           </div>
         </div>
       )}
