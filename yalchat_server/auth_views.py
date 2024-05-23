@@ -49,9 +49,7 @@ async def login(
 
 
 @router.post("/logout")
-async def logout(
-    response: Response, user: Annotated[types.User, deps.get_current_user]
-):
+async def logout(response: Response, user: deps.AuthenticatedUserDep):
     response.delete_cookie(
         key="access_token",
         httponly=True,
