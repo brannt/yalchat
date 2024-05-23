@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     ]
     TELEGRAM_BOT_TOKEN: str = ""
     TELEGRAM_REDIRECT_URI: str = ""
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION: int = 60
 
 
 config = Settings(_env_file=".env", _env_file_encoding="utf-8")

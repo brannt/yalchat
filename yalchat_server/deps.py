@@ -17,7 +17,7 @@ async def get_current_user(
     token: Annotated[str, Depends(auth.get_token_cookie)],
     user_repo: UserRepoDep,
 ) -> types.User:
-    username = auth.decode_token(token)
+    username = auth.decode_token(token)["sub"]
     if user := await user_repo.get_user(username):
         return user
     raise HTTPException(
