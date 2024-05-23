@@ -89,18 +89,20 @@ function LoginForm({ onLoginSuccess }) {
                 </div>
               </div>
 
-              <div className="field">
+              <div className="field is-grouped">
                 <div className="control">
                   <button className="button is-primary" type="submit">
                     Login
                   </button>
                 </div>
+                <div className="control">
+                  <TelegramLoginButton
+                    botName={config.TELEGRAM_BOT_NAME}
+                    redirectUrl={config.TELEGRAM_REDIRECT_URL}
+                  />
+                </div>
               </div>
             </form>
-            <TelegramLoginButton
-              botName={config.TELEGRAM_BOT_NAME}
-              redirectUrl={config.TELEGRAM_REDIRECT_URL}
-            />
           </div>
         </div>
       )}
