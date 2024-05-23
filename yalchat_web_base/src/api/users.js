@@ -29,4 +29,18 @@ async function loginUser(username, password) {
   }
 }
 
-export { getCurrentUser, loginUser };
+async function logoutUser() {
+  const response = await fetch(`${config.BACKEND_URL}/auth/logout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Logout failed");
+  }
+}
+
+export { getCurrentUser, loginUser, logoutUser };

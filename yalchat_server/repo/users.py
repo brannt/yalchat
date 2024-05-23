@@ -1,21 +1,29 @@
-from yalchat_server import types
-
-USERS = {
-    "local": {
-        "id": 1,
-        "username": "localuser",
-        "email": "",
-        # Hashed empty string
-        "password_hash": "2afe16a6d630d94cd07c68d5e35568655bf5f60bef29c4f1321fc857816afec9",
-    }
-}
+import databases
+from yalchat_server import db, types
 
 
-def get_user(username: str) -> types.User | None:
-    if user := USERS.get(username):
-        return types.User(**user)
+users = db.schema.users
 
 
-def get_password_hash(username: str) -> str | None:
-    if user := USERS.get(username):
-        return user["password_hash"]
+class UserRepo:
+    table = db.schema.users
+
+    def __init__(self, database: databases.Database) -> None:
+        self.database = database
+
+    async def setup(self):
+        await db.create_table(users)
+
+    async def get_user(self, username: str) -> types.User | None:
+        query = users.select().where(users.c.username == username)
+        result = await self.database.fetch_one(query=query)
+        if not result:
+            return None
+        return types.User(**result._mapping)
+
+    async def get_password_hash(self, username: str) -> str | None:
+        query = users.select().where(users.c.username == username)
+        result = await self.database.fetch_one(query=query)
+        if not result:
+            return None
+        return result.password_hash

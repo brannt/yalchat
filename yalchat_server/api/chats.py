@@ -1,11 +1,11 @@
 import datetime
 from io import StringIO
-from typing import Annotated
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.responses import StreamingResponse
 from openai import BaseModel
-from yalchat_server import auth, deps, services, types
-from yalchat_server.repo import ChatRepo
+
+from yalchat_server import deps, services, types
 
 router = APIRouter()
 
@@ -29,8 +29,8 @@ class StatusResponse(BaseModel):
 
 @router.get("/")
 async def get_chats(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
-    user: Annotated[types.User, Depends(deps.get_current_user)],
+    chat_repo: deps.ChatRepoDep,
+    user: deps.AuthenticatedUserDep,
 ) -> list[types.Chat]:
     """
     Get all chat sessions.
@@ -41,9 +41,9 @@ async def get_chats(
 
 @router.post("/")
 async def create_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat_repo: deps.ChatRepoDep,
     chat: CreateChatRequest,
-    user: Annotated[types.User, Depends(deps.get_current_user)],
+    user: deps.AuthenticatedUserDep,
 ) -> types.Chat:
     """
     Start a new chat session.
@@ -67,9 +67,9 @@ async def create_chat(
 
 @router.get("/{chat_id}")
 async def get_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat_repo: deps.ChatRepoDep,
     chat_id: types.ChatID,
-    user: Annotated[types.User, Depends(deps.get_current_user)],
+    user: deps.AuthenticatedUserDep,
 ) -> types.ChatWithHistory:
     """
     Get a chat session.
@@ -82,9 +82,9 @@ async def get_chat(
 
 @router.delete("/{chat_id}", response_model=StatusResponse)
 async def delete_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat_repo: deps.ChatRepoDep,
     chat_id: types.ChatID,
-    user: Annotated[types.User, Depends(deps.get_current_user)],
+    user: deps.AuthenticatedUserDep,
 ):
     """
     Delete a chat session.
@@ -95,11 +95,11 @@ async def delete_chat(
 
 @router.post("/{chat_id}/stream")
 async def stream_chat(
-    chat_repo: Annotated[ChatRepo, Depends(deps.chat_repo)],
+    chat_repo: deps.ChatRepoDep,
     bg_tasks: BackgroundTasks,
     chat_id: types.ChatID,
     ch: ChatRequest,
-    user: Annotated[types.User, Depends(deps.get_current_user)],
+    user: deps.AuthenticatedUserDep,
 ) -> StreamingResponse:
     """
     Stream a chat response with history.

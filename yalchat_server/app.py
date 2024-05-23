@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from yalchat_server import api, auth, auth_views, db
+from yalchat_server import api, auth_views, db
 from yalchat_server.config import config
 
 logging.basicConfig(
@@ -13,17 +13,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("resol")
 
-app = FastAPI()
+fastapi_app = FastAPI()
 
-app.include_router(api.router, prefix="/api")
-app.include_router(auth_views.router, prefix="/auth")
+fastapi_app.include_router(api.router, prefix="/api")
+fastapi_app.include_router(auth_views.router, prefix="/auth")
 
-app.add_event_handler("startup", db.connect_to_db)
-app.add_event_handler("shutdown", db.close_db_connection)
+fastapi_app.add_event_handler("startup", db.connect_to_db)
+fastapi_app.add_event_handler("shutdown", db.close_db_connection)
 
 
-app.add_middleware(
-    CORSMiddleware,
+app = CORSMiddleware(
+    fastapi_app,
     allow_origins=config.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
@@ -34,7 +34,7 @@ app.add_middleware(
 if config.DEBUG:
     logger.info("API started in DEBUG mode.")
 
-    @app.exception_handler(Exception)
+    @fastapi_app.exception_handler(Exception)
     async def debug_exception_handler(request: Request, exc: Exception):
         import traceback
 

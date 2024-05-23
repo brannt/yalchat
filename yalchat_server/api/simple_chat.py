@@ -1,10 +1,8 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from yalchat_server import deps, services, types
+from yalchat_server import deps, services
 from yalchat_server.config import config
 from yalchat_server.types import ChatMessage
 
@@ -23,7 +21,7 @@ class ChatResponse(BaseModel):
 
 @router.post("/")
 async def chat(
-    ch: ChatRequest, current_user: Annotated[types.User, Depends(deps.get_current_user)]
+    ch: ChatRequest, current_user: deps.AuthenticatedUserDep
 ) -> ChatResponse:
     """
     Get a simple chat response without storing the history.
