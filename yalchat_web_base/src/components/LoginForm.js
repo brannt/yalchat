@@ -51,14 +51,6 @@ function LoginForm({ onLoginSuccess }) {
     }
   };
 
-  const handleAuthLogin = async (provider) => {
-    const response = await fetch(
-      `${config.BACKEND_URL}/auth/${provider}/login`
-    );
-    const data = await response.json();
-    window.location.href = data.oauth.url;
-  };
-
   return (
     <section className="section container">
       {isLoading ? (
@@ -105,13 +97,6 @@ function LoginForm({ onLoginSuccess }) {
                 </div>
               </div>
             </form>
-
-            <button
-              className="button is-info"
-              onClick={() => handleAuthLogin("github")}
-            >
-              Login with GitHub
-            </button>
             <TelegramLoginButton
               botName={config.TELEGRAM_BOT_NAME}
               redirectUrl={config.TELEGRAM_REDIRECT_URL}
