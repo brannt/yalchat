@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "yalchat_server"
+name = "yalchat-server"
 version = "0.1.0"
 description = "Yet Another LLM Chat App"
 authors = ["Artem Gorokhov <branntart@gmail.com>"]
@@ -11,6 +11,7 @@ classifiers = [
 ]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "yalchat_server" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"

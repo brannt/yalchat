@@ -1,5 +1,28 @@
 version: "3"
 services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile_backend
+    ports:
+      - 8000:8000
+    environment:
+      - PORT=8000
+      - WORKERS=1
+      - DATABASE_URI=postgresql+asyncpg://yalchat:yalchat@postgres:5432/yalchat
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+  ui:
+    build:
+      context: .
+      dockerfile: ./Dockerfile_frontend
+    ports:
+      - 3000:3000
+    environment:
+      - REACT_APP_API_URL=http://api:8000
+    command: npm start
   postgres:
     image: postgres
     volumes:

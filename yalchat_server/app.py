@@ -11,7 +11,7 @@ logging.basicConfig(
     format="%(asctime)s %(name)16.16s %(funcName)10.10s %(levelname)7s: " "%(message)s",
     force=True,
 )
-logger = logging.getLogger("resol")
+logger = logging.getLogger(__name__)
 
 fastapi_app = FastAPI()
 

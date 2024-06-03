@@ -1,0 +1,42 @@
+FROM python:3.11-buster AS builder
+WORKDIR /app
+
+ARG YOUR_ENV
+ENV YOUR_ENV=${YOUR_ENV} \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    # Poetry's configuration:
+    # POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=true \
+    POETRY_CACHE_DIR='/var/cache/pypoetry' \
+    POETRY_HOME='/usr/local' \
+    POETRY_VERSION=1.7.1 \
+    # App config
+    WORKERS=1 \
+    PORT=8000
+
+RUN python -m pip install --user --upgrade pipx
+ENV PATH="/root/.local/bin:${PATH}"
+RUN pipx install "poetry==${POETRY_VERSION}" && pipx inject poetry poetry-plugin-bundle
+
+WORKDIR /src
+
+COPY poetry.lock pyproject.toml ./
+
+# Copy the backend necessary files to the container
+COPY ./yalchat_server ./yalchat_server
+COPY ./Makefile ./
+COPY ./README.md ./
+
+RUN poetry bundle venv --python=/usr/local/bin/python3 --only=main,deploy /venv
+
+# Expose the port on which the FastAPI server will run
+EXPOSE 8000
+
+FROM python:3.11-slim-buster
+COPY --from=builder /venv /venv
+CMD ["sh", "-c", "/venv/bin/python3 -m gunicorn -w ${WORKERS} -k uvicorn.workers.UvicornWorker -b 0.0.0.0:${PORT} yalchat_server.app:app"]
