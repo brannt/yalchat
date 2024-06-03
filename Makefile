@@ -15,4 +15,4 @@ run-dev:
 	poetry run uvicorn yalchat_server.app:app --reload --port $(PORT)
 
 run-pro:
-	poetry run gunicorn -w $(WORKERS) -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT) yalchat_server.app:app
+	poetry run gunicorn -w $(WORKERS) -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$(PORT) --preload yalchat_server.app:app

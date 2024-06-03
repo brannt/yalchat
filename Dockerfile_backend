@@ -39,4 +39,4 @@ EXPOSE 8000
 
 FROM python:3.11-slim-buster
 COPY --from=builder /venv /venv
-CMD ["sh", "-c", "/venv/bin/python3 -m gunicorn -w ${WORKERS} -k uvicorn.workers.UvicornWorker -b 0.0.0.0:${PORT} yalchat_server.app:app"]
+CMD ["sh", "-c", "/venv/bin/python3 -m gunicorn -w ${WORKERS} -k uvicorn.workers.UvicornWorker -b 0.0.0.0:${PORT} --preload yalchat_server.app:app"]
