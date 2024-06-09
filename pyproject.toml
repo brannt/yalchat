@@ -25,6 +25,7 @@ fire = "^0.6.0"
 python-multipart = "^0.0.9"
 google-auth = "^2.29.0"
 pyjwt = "^2.8.0"
+sqlalchemy = "^2.0.30"
 
 
 [tool.poetry.group.dev.dependencies]

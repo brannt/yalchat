@@ -9,9 +9,13 @@ dialect_name = config.DATABASE_URI.split(":")[0].split("+")[0]
 def get_dialect():
     match dialect_name:
         case "sqlite":
-            return sa.dialects.sqlite.dialect()
+            from sqlalchemy.dialects import sqlite
+
+            return sqlite.aiosqlite.dialect()
         case "postgresql":
-            return sa.dialects.postgresql.dialect()
+            from sqlalchemy.dialects import postgresql
+
+            return postgresql.asyncpg.dialect()
         case _:
             raise ValueError(f"Unsupported database dialect: {dialect_name}")
 
